@@ -1,0 +1,57 @@
+---
+title: "ESM 204 Assignment 3"
+output: html_document
+date: '2022-05-06'
+theme: cerulean
+---
+
+```{r setup, include=TRUE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+library(thematic)
+library(ggplot2)
+library(equatiomatic)
+```
+
+
+## Overview
+
+```{r}
+# Read in data
+
+electricity <- read_csv(here("data", "hw3_data.csv")) %>% 
+  clean_names() %>% 
+  select(-x1)
+
+```
+
+The Biden Administration’s “interim” value is $51 per metric ton of CO2. The electricity sector is the second largest source of greenhouse gas emissions in the U.S. (after transportation). In this analysis, we will consider the distributional consequences of imposing a household electricity tax based on the SCC to address the climate change problem.
+
+## Analysis
+
+The data includes the following: 
+- Consumers can be separated into two income groups: “high” and “low.” 
+- Price (in $) and quantity (in kWh) estimates of demand per month for the two groups. 
+
+The analysis will show linear regressions (with an intercept) to estimate the demand curves for “high” and “low” income consumers under the following scenarios: 
+
+-  Initially, there is no tax on electricity consumption.
+- The current electricity price (without any taxes) is $.10 per kWh.
+- The marginal cost of producing a kWh of electricity is linear and has a price-intercept of 0.
+
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
