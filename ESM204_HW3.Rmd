@@ -42,6 +42,7 @@ The analysis will show linear regressions (with an intercept) to estimate the de
 - The current electricity price (without any taxes) is $.10 per kWh.
 - The marginal cost of producing a kWh of electricity is linear and has a price-intercept of 0.
 Test
+Test 2
 
 
 
