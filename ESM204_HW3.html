@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Julia Wilson &amp; Thomas Lenihan" />
 
 <meta name="date" content="2022-05-06" />
 
@@ -363,26 +364,14 @@ pre code {
 
 
 <h1 class="title toc-ignore">ESM 204 Assignment 3</h1>
+<h4 class="author">Julia Wilson &amp; Thomas Lenihan</h4>
 <h4 class="date">2022-05-06</h4>
 
 </div>
 
 
-<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-
-library(tidyverse)
-library(here)
-library(janitor)
-library(thematic)
-library(ggplot2)
-library(equatiomatic)</code></pre>
 <div id="overview" class="section level2">
 <h2>Overview</h2>
-<pre class="r"><code># Read in data
-
-electricity &lt;- read_csv(here(&quot;data&quot;, &quot;hw3_data.csv&quot;)) %&gt;% 
-  clean_names() %&gt;% 
-  select(-x1)</code></pre>
 <p>The Biden Administration’s “interim” value is $51 per metric ton of
 CO2. The electricity sector is the second largest source of greenhouse
 gas emissions in the U.S. (after transportation). In this analysis, we
@@ -409,52 +398,85 @@ has a price-intercept of 0.</li>
 <h3><strong>1. MEC</strong></h3>
 <p>Assuming one kWh of electricity emits 0.85 pounds of CO2 and the
 interim SCC is $51/ton, we can then calculate the MEC per kWh.</p>
-<pre class="r"><code># Create a longer data set switching income from a column to a variable
-
-electricity_long &lt;- electricity %&gt;% 
-  pivot_longer(cols = c(q_low_kwh, q_high_kwh),
-               names_to = &#39;income_level&#39;,
-               values_to = &#39;kwh&#39;) %&gt;%
-  mutate(income_level = case_when(income_level == &#39;q_low_kwh&#39; ~ &#39;low&#39;,
-                                  income_level == &#39;q_high_kwh&#39; ~ &#39;high&#39;))
-
-# Run a calculation to get the MEC 
-
-# Set up the interim price at $51/ton
-interim_price_ton &lt;- 51
-
-# Convert price per ton to price/lb 
-interim_price_lb &lt;- interim_price_ton/2205
-
-# Multiply the interim price by 0.85 to get MEC/kWh 
-interim_price_kWh &lt;- interim_price_lb * 0.85</code></pre>
-<p>The marginal external cost per kWh of electricity is $‘r
-round(interim_price_lb, 3)’.</p>
+<p>The marginal external cost per kWh of electricity is $0.02.</p>
 </div>
 <div id="aggregations" class="section level3">
 <h3><strong>2. Aggregations</strong></h3>
-<p><strong>Low income demand curve:</strong></p>
+<p><strong>Aggregate Demand Curve</strong></p>
+<p><strong>Low Income Demand Curve:</strong></p>
 <pre class="r"><code># lm estimates for both low and high incomes 
 demand_low &lt;- lm(price_cents ~ kwh, income_level == &#39;low&#39;,
                  data = electricity_long)
-extract_eq(model = demand_low, use_coefs = TRUE, coef_digits = 5)</code></pre>
+extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 5)</code></pre>
 <p><span class="math display">\[
-\operatorname{\widehat{price\_cents}} = 23.37097 -
-0.00011(\operatorname{kwh})
-\]</span> <strong>High income demand curve:</strong></p>
+\operatorname{\widehat{price\_cents}} = 23.37 + 0(\operatorname{kwh})
+\]</span></p>
+<pre class="r"><code>demand_low</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price_cents ~ kwh, data = electricity_long, subset = income_level == 
+##     &quot;low&quot;)
+## 
+## Coefficients:
+## (Intercept)          kwh  
+##  23.3709671   -0.0001102</code></pre>
+<p><strong>High Income Demand Curve:</strong></p>
 <pre class="r"><code>demand_high &lt;- lm(price_cents ~ kwh, income_level == &#39;high&#39;,
                   data = electricity_long)
 extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)</code></pre>
 <p><span class="math display">\[
 \operatorname{\widehat{price\_cents}} = 31.61 + 0(\operatorname{kwh})
 \]</span></p>
+<pre class="r"><code>demand_high</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price_cents ~ kwh, data = electricity_long, subset = income_level == 
+##     &quot;high&quot;)
+## 
+## Coefficients:
+## (Intercept)          kwh  
+##   3.161e+01   -5.202e-05</code></pre>
 <p>With the income-based demand curves, we can sum horizontally to find
 the <strong>aggregate demand curve:</strong></p>
-<pre class="r"><code># Convert the equations so that Q is on one side and the sum
+<p>The resulting aggregate demand equation is <em>P = 30.5 -
+0.000039Q</em></p>
+<p>(The price is in cents, not dollars)</p>
+<p><strong>Supply Curve</strong></p>
+<p>The current price is $0.10/kWh and the MC for electricity is linear
+with a 0 intercept.</p>
+<pre class="r"><code>kwh_agg &lt;- demand_agg_p(10)
 
-demand_low_flip &lt;- lm(kwh ~ price_cents, income_level == &#39;low&#39;, data = electricity_long)
+# 522127.8 kWh at $0.10
 
-demand_high_flip &lt;- lm(kwh ~ price_cents, income_level == &#39;high&#39;, data = electricity_long)</code></pre>
+supply_slope &lt;- 10/kwh_agg
+# 0.000019</code></pre>
+<p>The supply curve will pass through the agg demand curve at $0.10/kwh.
+We can then infer the supply curve equation will be:</p>
+<p><em>P = 0.0000192Q</em></p>
+<p>We can then calculate consumer and producer surplus and environmental
+cost. We will be cautious of converting from cents to dollars.</p>
+<pre class="r"><code># Consumer Surplus 
+
+# Converting cents to dollars for the y-axis
+cs &lt;- 0.5*kwh_agg*(0.305-0.10)
+cs</code></pre>
+<pre><code>## (Intercept) 
+##     53518.1</code></pre>
+<pre class="r"><code># $53,518.12
+
+# Producer Surplus 
+
+ps &lt;- 0.5*kwh_agg*(.10)
+# $26,106.39
+
+# Environmental Cost 
+env_cost &lt;- interim_price_kWh*kwh_agg
+# $10,264.96</code></pre>
+<ul>
+<li>Consumer Benefit = $5.3518^{4}</li>
+<li>Producer Benefit = $2.6106^{4}</li>
+<li>Environmental Cost = $1.0265^{4}</li>
+</ul>
 </div>
 <div id="consumer-benefit" class="section level3">
 <h3><strong>3. Consumer Benefit</strong></h3>

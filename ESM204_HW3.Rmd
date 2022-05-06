@@ -1,11 +1,11 @@
 ---
 title: "ESM 204 Assignment 3"
+author: "Julia Wilson & Thomas Lenihan"
 output: html_document
 date: '2022-05-06'
-theme: cerulean
 ---
 
-```{r setup, include=TRUE, message=FALSE, warning=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
@@ -19,7 +19,7 @@ library(equatiomatic)
 
 ## Overview
 
-```{r}
+```{r, include = FALSE}
 # Read in data
 
 electricity <- read_csv(here("data", "hw3_data.csv")) %>% 
@@ -46,7 +46,7 @@ The analysis will show linear regressions (with an intercept) to estimate the de
 
 Assuming one kWh of electricity emits 0.85 pounds of CO2 and the interim SCC is $51/ton, we can then calculate the MEC per kWh. 
 
-```{r}
+```{r, include = FALSE}
 
 # Create a longer data set switching income from a column to a variable
 
@@ -70,33 +70,99 @@ interim_price_kWh <- interim_price_lb * 0.85
 
 ```
 
-The marginal external cost per kWh of electricity is $'r round(interim_price_lb, 3)'.
+The marginal external cost per kWh of electricity is $`r round(interim_price_kWh, 3)`.
 
 ### **2. Aggregations**
 
-**Low income demand curve:**
+**Aggregate Demand Curve** 
+
+**Low Income Demand Curve:**
 ```{r}
 # lm estimates for both low and high incomes 
 demand_low <- lm(price_cents ~ kwh, income_level == 'low',
                  data = electricity_long)
-extract_eq(model = demand_low, use_coefs = TRUE, coef_digits = 5)
+extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 5)
+
+demand_low
 ```
-**High income demand curve:**
+**High Income Demand Curve:**
 ```{r}
 demand_high <- lm(price_cents ~ kwh, income_level == 'high',
                   data = electricity_long)
 extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)
+
+demand_high
 ```
 
 With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
 
-```{r}
+```{r, include = FALSE}
 # Convert the equations so that Q is on one side and the sum
 
 demand_low_flip <- lm(kwh ~ price_cents, income_level == 'low', data = electricity_long)
 
 demand_high_flip <- lm(kwh ~ price_cents, income_level == 'high', data = electricity_long)
+
+kwh_agg_int <- (demand_low_flip$coefficients[1]+demand_high_flip$coefficients[1])
+
+kwh_agg_slope <- (demand_low_flip$coefficients[2] +
+                    demand_high_flip$coefficients[2])
+
+demand_agg_p <- function(price_cents){kwh_agg_int + kwh_agg_slope*(price_cents)}
+
+demand_agg_int <- kwh_agg_int*-kwh_agg_slope
+demand_agg_slope <- 1/kwh_agg_slope
+
+# Aggregate demand function: P = 30.5 - 0.000039Q
+
+demand_agg <- function(kwh){demand_agg_int + demand_agg_slope *kwh}
+  
 ```
+
+The resulting aggregate demand equation is *P = 30.5 - 0.000039Q*
+
+(The price is in cents, not dollars)
+
+**Supply Curve**
+
+The current price is $0.10/kWh and the MC for electricity is linear with a 0 intercept. 
+
+```{r}
+kwh_agg <- demand_agg_p(10)
+
+# 522127.8 kWh at $0.10
+
+supply_slope <- 10/kwh_agg
+# 0.000019
+```
+
+The supply curve will pass through the agg demand curve at $0.10/kwh. We can then infer the supply curve equation will be: 
+
+*P = 0.0000192Q*
+
+We can then calculate consumer and producer surplus and environmental cost. We will be cautious of converting from cents to dollars. 
+
+```{r}
+# Consumer Surplus 
+
+# Converting cents to dollars for the y-axis
+cs <- 0.5*kwh_agg*(0.305-0.10)
+cs
+# $53,518.12
+
+# Producer Surplus 
+
+ps <- 0.5*kwh_agg*(.10)
+# $26,106.39
+
+# Environmental Cost 
+env_cost <- interim_price_kWh*kwh_agg
+# $10,264.96
+```
+
+- Consumer Benefit = $`r round(cs,0)`
+- Producer Benefit = $`r round(ps,0)`
+- Environmental Cost = $`r round(env_cost,0)`
 
 
 ### **3. Consumer Benefit**
