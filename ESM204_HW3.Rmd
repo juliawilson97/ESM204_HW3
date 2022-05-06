@@ -41,19 +41,68 @@ The analysis will show linear regressions (with an intercept) to estimate the de
 -  Initially, there is no tax on electricity consumption.
 - The current electricity price (without any taxes) is $.10 per kWh.
 - The marginal cost of producing a kWh of electricity is linear and has a price-intercept of 0.
-Test
-Test 2
 
+### **1. MEC**
 
-
+Assuming one kWh of electricity emits 0.85 pounds of CO2 and the interim SCC is $51/ton, we can then calculate the MEC per kWh. 
 
 ```{r}
 
+# Create a longer data set switching income from a column to a variable
+
+electricity_long <- electricity %>% 
+  pivot_longer(cols = c(q_low_kwh, q_high_kwh),
+               names_to = 'income_level',
+               values_to = 'kwh') %>%
+  mutate(income_level = case_when(income_level == 'q_low_kwh' ~ 'low',
+                                  income_level == 'q_high_kwh' ~ 'high'))
+
+# Run a calculation to get the MEC 
+
+# Set up the interim price at $51/ton
+interim_price_ton <- 51
+
+# Convert price per ton to price/lb 
+interim_price_lb <- interim_price_ton/2205
+
+# Multiply the interim price by 0.85 to get MEC/kWh 
+interim_price_kWh <- interim_price_lb * 0.85
+
+```
+
+The marginal external cost per kWh of electricity is $'r round(interim_price_lb, 3)'.
+
+### **2. Aggregations**
+
+**Low income demand curve:**
+```{r}
+# lm estimates for both low and high incomes 
+demand_low <- lm(price_cents ~ kwh, income_level == 'low',
+                 data = electricity_long)
+extract_eq(model = demand_low, use_coefs = TRUE, coef_digits = 5)
+```
+**High income demand curve:**
+```{r}
+demand_high <- lm(price_cents ~ kwh, income_level == 'high',
+                  data = electricity_long)
+extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)
+```
+
+With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
+
+```{r}
+# Convert the equations so that Q is on one side and the sum
+
+demand_low_flip <- lm(kwh ~ price_cents, income_level == 'low', data = electricity_long)
+
+demand_high_flip <- lm(kwh ~ price_cents, income_level == 'high', data = electricity_long)
 ```
 
 
+### **3. Consumer Benefit**
 
+### **4. Optimal Tax**
 
+### **5. Redistribution**
 
-
-
+### **6. Solar PV**
