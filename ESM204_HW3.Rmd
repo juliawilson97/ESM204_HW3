@@ -42,7 +42,7 @@ The analysis will show linear regressions (with an intercept) to estimate the de
 - The current electricity price (without any taxes) is $.10 per kWh.
 - The marginal cost of producing a kWh of electricity is linear and has a price-intercept of 0.
 
-### **1. MEC**
+### **1. Marginal External Cost of electricity**
 
 Assuming one kWh of electricity emits 0.85 pounds of CO2 and the interim SCC is $51/ton, we can then calculate the MEC per kWh. 
 
@@ -81,10 +81,12 @@ The marginal external cost per kWh of electricity is $`r round(interim_price_kWh
 # lm estimates for both low and high incomes 
 demand_low <- lm(price_cents ~ kwh, income_level == 'low',
                  data = electricity_long)
-extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 5)
+extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 8)
 
 demand_low
 ```
+
+
 **High Income Demand Curve:**
 ```{r}
 demand_high <- lm(price_cents ~ kwh, income_level == 'high',
@@ -166,6 +168,28 @@ env_cost <- interim_price_kWh*kwh_agg
 
 
 ### **3. Consumer Benefit**
+
+**Low income consumers:** consumer benefit is found by taking the area under the low income demand curve but above the current price of electricity ($0.10/kWh). This area is a triangle with base 121545 and height 13.37. 
+
+  0.5 * 13.37 cents/kWh * 121545 kWh = 812,528 cents 
+  
+  **benefit for low income consumers is $8,125.3.**
+
+**High income consumers:**consumer benefit is found by taking the area under the high income demand curve but above the current price of electricity ($0.10/kWh). This area is a triangle with base 415577 and height 21.61.
+
+  0.5 * 21.61 cents/kWh * 415577 kWh = 4,490,309.5 cents
+
+  **benefit for high income consumers is $44,903.1.**
+  
+total consumer surplus = 8,125.3 + 44,903.1 = $53,028.4
+
+(8,125.3/53,028.4)*100 = 
+(44,903.1/53,028.4)*100 = 
+
+low income consumers receive XXXX % of the total benefit.
+high income consumers receive XXXX % of the total benefit. 
+
+
 
 ### **4. Optimal Tax**
 
