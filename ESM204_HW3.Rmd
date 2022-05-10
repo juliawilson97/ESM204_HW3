@@ -1,6 +1,6 @@
 ---
 title: "ESM 204 Assignment 3"
-author: "Julia Wilson & Thomas Lenihan"
+author: "Julia Wilson"
 output: html_document
 date: '2022-05-06'
 ---
@@ -75,6 +75,7 @@ The marginal external cost per kWh of electricity is $`r round(interim_price_kWh
 ### **2. Aggregations**
 
 **Aggregate Demand Curve** 
+To find the aggregate demand curve, we will first find the high and low income demand curves. 
 
 **Low Income Demand Curve:**
 
