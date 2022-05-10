@@ -101,9 +101,11 @@ extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)
 demand_high
 ```
 
-# Demand model from sample code
+
 
 ```{r}
+# Demand model from sample code
+
 demand <- function(p, model){
   q <- (p - model$coefficients[[1]])/model$coefficients[[2]]
   q <- ifelse(q<0,0,q)
@@ -111,15 +113,19 @@ demand <- function(p, model){
 }
 ```
 
-# Aggregate demand from code sample 
+
 ```{r}
+# Aggregate demand from code sample 
+
 demand_agg <- function(p){
   q <- demand(p, demand_low) + demand(p, demand_high)
   return(q)
 }
+
+# demand_agg(10) = 536,719.5
 ```
 
-With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
+With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:** 29.78135 - 0.00004(Qagg)
 
 ```{r}
 # Make a vector and extract the lm 
@@ -131,7 +137,6 @@ Qagg <- map(price, demand_agg) %>%
 agg_df<- tibble(Qagg = Qagg, price = price)
 
 demand_agg_eq <- lm(price ~ Qagg, data = agg_df) 
-extract_eq(model = demand_agg_eq, use_coefs = TRUE, coef_digits = 5)
 ```
 
 ```{r}
@@ -140,15 +145,18 @@ extract_eq(model = demand_agg_eq, use_coefs = TRUE, coef_digits = 5)
 agg_slope <- demand_agg_eq$coefficients[2]
 agg_int <- demand_agg_eq$coefficients[1]
 
+agg_slope
+agg_int
+
+# Aggregate demand function is P = 29.78135 - 0.00004(Qagg)
+
 ```
 
 
-
-
-[DELETE FOLLOWING MANUAL ATTEMPT:]
-With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
-
 ```{r, include = FALSE}
+
+# [OLD CODE, CAN DELETE]
+
 # Convert the equations so that Q is on one side and the sum
 
 demand_low_flip <- lm(kwh ~ price_cents, income_level == 'low', data = electricity_long)
@@ -171,9 +179,6 @@ demand_agg <- function(kwh){demand_agg_int + demand_agg_slope *kwh}
   
 ```
 
-*P = 30.5 - 0.000039Q*
-
-(The price is in cents, not dollars)
 
 **Supply Curve**
 
@@ -182,7 +187,7 @@ The current price is $0.10/kWh and the MC for electricity is linear with a 0 int
 ```{r, include = FALSE}
 kwh_agg <- demand_agg_p(10)
 
-# 522127.8 kWh at $0.10
+# 536,719.5 kWh at $0.10
 
 supply_slope <- 10/kwh_agg
 # 0.000019
@@ -192,9 +197,40 @@ The supply curve will pass through the agg demand curve at $0.10/kwh. We can the
 
 *P = 0.0000192Q*
 
+#### Visualize the data
+
+```{r}
+ggplot(agg_df, aes(Qagg, price)) +
+  geom_line(color = "goldenrod3") +
+  annotate("text", x = 400000, y = 17, 
+           label = "Demand (Agg)", angle = -30) +
+  geom_abline(color = "firebrick4",
+              intercept = demand_high$coefficients[1],
+              slope= demand_high$coefficients[2]) +
+  annotate("text", x = 300000, y = 15, 
+           label = "High-Income Demand", angle = -38) +
+  geom_abline(color = "steelblue4",
+              intercept = demand_low$coefficients[1],
+              slope= demand_low$coefficients[2]) +
+  annotate("text", x = 150000, y = 9, 
+           label = "Low-Income Demand", angle = -60) +
+  geom_abline(color = "darkolivegreen",
+              intercept = 0,
+              slope= supply_slope) +
+  annotate("text", x = 300000, y = 7, 
+           label = "MPC", angle = 17) +
+  labs(x = "Electricity Consumed (kWh)",
+       y = "Price (cents/kWh)") +
+  theme_minimal()
+```
+
+#### **Figure 1: Market for Electricity**
+
+
+
 We can then calculate consumer and producer surplus and environmental cost. We will be cautious of converting from cents to dollars. 
 
-```{r, include = FALSE}
+```{r}
 # Consumer Surplus 
 
 # Converting cents to dollars for the y-axis
