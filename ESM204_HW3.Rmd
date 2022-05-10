@@ -121,7 +121,13 @@ demand_agg <- function(kwh){demand_agg_int + demand_agg_slope *kwh}
   
 ```
 
-The resulting aggregate demand equation is *P = 30.5 - 0.000039Q*
+The resulting aggregate demand equation from 0 to 158,642 is: 
+
+*31.61 - 0.000052Q* 
+
+and from 158,462 to XXXX, it is: 
+
+*P = 29.78 - .00004Q*
 
 (The price is in cents, not dollars)
 
