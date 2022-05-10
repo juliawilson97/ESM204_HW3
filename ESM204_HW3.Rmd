@@ -183,11 +183,15 @@ env_cost <- interim_price_kWh*kwh_agg
   
 total consumer surplus = 8,125.3 + 44,903.1 = $53,028.4
 
-(8,125.3/53,028.4)*100 = 
-(44,903.1/53,028.4)*100 = 
+total consumer surplus = (13.37 * 158,641.5) + ((31.61 - 23.37) * 0.5  * 158,641.5) + (0.5 * (525,641  - 158,641.5) * 13.37)
+total consumer surplus = **$52,280.3 (CHECK THIS)**
 
-low income consumers receive XXXX % of the total benefit.
-high income consumers receive XXXX % of the total benefit. 
+(8,125.3/53,028.4)*100 = 15.3%
+(44,903.1/53,028.4)*100 = 84.7%
+
+**low income consumers receive 15.3% of the total benefit.**
+
+**high income consumers receive 84.7% of the total benefit. **
 
 
 
