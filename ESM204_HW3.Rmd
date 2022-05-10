@@ -6,7 +6,7 @@ date: '2022-05-06'
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
 library(tidyverse)
 library(here)
@@ -81,25 +81,24 @@ The marginal external cost per kWh of electricity is $`r round(interim_price_kWh
 # lm estimates for both low and high incomes 
 demand_low <- lm(price_cents ~ kwh, income_level == 'low',
                  data = electricity_long)
-extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 8)
+#extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 8)
 
-demand_low
+#demand_low
 ```
-
+The equation for our low income demand curve was **P = 23.37 - 0.00011Q**
 
 **High Income Demand Curve:**
 ```{r}
 demand_high <- lm(price_cents ~ kwh, income_level == 'high',
                   data = electricity_long)
-extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)
+#extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)
 
-demand_high
+#demand_high
 ```
 
-<<<<<<< HEAD
-With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
-=======
+The equation for our high income demand curve was **P = 31.61 - 0.000052Q**
 
+With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
 
 ```{r}
 # Demand model from sample code
@@ -150,8 +149,6 @@ agg_int
 
 ```
 
->>>>>>> 889e41a1f8be08a36629668410de844829056f52
-
 ```{r, include = FALSE}
 
 # [OLD CODE, CAN DELETE]
@@ -178,18 +175,15 @@ demand_agg <- function(kwh){demand_agg_int + demand_agg_slope *kwh}
   
 ```
 
-<<<<<<< HEAD
 The resulting aggregate demand equation from 0 to 158,642 is: 
 
 *31.61 - 0.000052Q* 
 
-and from 158,462 to XXXX, it is: 
+and from 158,462 to 820,339, it is: 
 
 *P = 29.78 - .00004Q*
 
 (The price is in cents, not dollars)
-=======
->>>>>>> 889e41a1f8be08a36629668410de844829056f52
 
 **Supply Curve**
 
