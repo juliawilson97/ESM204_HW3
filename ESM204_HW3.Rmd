@@ -70,7 +70,7 @@ interim_price_kWh <- interim_price_lb * 0.85
 
 ```
 
-The marginal external cost per kWh of electricity is $`r round(interim_price_kWh, 3)`.
+The marginal external cost per kWh of electricity is 1.96 cents.
 
 ### **2. Aggregations**
 
@@ -302,5 +302,48 @@ total consumer surplus = **$52,280.3 (CHECK THIS)**
 ### **4. Optimal Tax**
 
 ### **5. Redistribution**
+
+estimates of distributional effects of a carbon tax with different SCC values are as follows: 
+
+**$51/ton:**
+
+  - effects on "high" income consumers: 
+  
+  - effects on "low" income consumers: 
+  
+  - effects on electricity producers:
+  
+**$75/ton:**
+
+  - effects on "high" income consumers: 
+  
+  - effects on "low" income consumers: 
+  
+  - effects on electricity producers:
+
+**$100/ton:**
+
+  - effects on "high" income consumers: 
+  
+  - effects on "low" income consumers: 
+  
+  - effects on electricity producers:
+  
+**$125/ton:**
+
+  - effects on "high" income consumers: 
+  
+  - effects on "low" income consumers: 
+  
+  - effects on electricity producers:
+  
+**$150/ton:**
+
+  - effects on "high" income consumers: 
+  
+  - effects on "low" income consumers: 
+  
+  - effects on electricity producers:
+  
 
 ### **6. Solar PV**
