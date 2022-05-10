@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Julia Wilson &amp; Thomas Lenihan" />
+<meta name="author" content="Julia Wilson" />
 
 <meta name="date" content="2022-05-06" />
 
@@ -364,7 +364,7 @@ pre code {
 
 
 <h1 class="title toc-ignore">ESM 204 Assignment 3</h1>
-<h4 class="author">Julia Wilson &amp; Thomas Lenihan</h4>
+<h4 class="author">Julia Wilson</h4>
 <h4 class="date">2022-05-06</h4>
 
 </div>
@@ -394,21 +394,58 @@ kWh.</li>
 <li>The marginal cost of producing a kWh of electricity is linear and
 has a price-intercept of 0.</li>
 </ul>
-<div id="mec" class="section level3">
-<h3><strong>1. MEC</strong></h3>
+<div id="marginal-external-cost-of-electricity" class="section level3">
+<h3><strong>1. Marginal External Cost of electricity</strong></h3>
 <p>Assuming one kWh of electricity emits 0.85 pounds of CO2 and the
 interim SCC is $51/ton, we can then calculate the MEC per kWh.</p>
 <p>The marginal external cost per kWh of electricity is $0.02.</p>
 </div>
 <div id="aggregations" class="section level3">
 <h3><strong>2. Aggregations</strong></h3>
-<p><strong>Aggregate Demand Curve</strong></p>
+<p><strong>Aggregate Demand Curve</strong> To find the aggregate demand
+curve, we will first find the high and low income demand curves.</p>
 <p><strong>Low Income Demand Curve:</strong></p>
 <p><em>P = 23.37 - 0.0001102Q</em></p>
 <p><strong>High Income Demand Curve:</strong></p>
 <p><em>P = 31.61 - 0.000052Q</em></p>
+</div>
+</div>
+<div id="demand-model-from-sample-code" class="section level1">
+<h1>Demand model from sample code</h1>
+<pre class="r"><code>demand &lt;- function(p, model){
+  q &lt;- (p - model$coefficients[[1]])/model$coefficients[[2]]
+  q &lt;- ifelse(q&lt;0,0,q)
+  return(q)
+}</code></pre>
+</div>
+<div id="aggregate-demand-from-code-sample" class="section level1">
+<h1>Aggregate demand from code sample</h1>
+<pre class="r"><code>demand_agg &lt;- function(p){
+  q &lt;- demand(p, demand_low) + demand(p, demand_high)
+  return(q)
+}</code></pre>
 <p>With the income-based demand curves, we can sum horizontally to find
 the <strong>aggregate demand curve:</strong></p>
+<pre class="r"><code># Make a vector and extract the lm 
+price = seq(0, 30, length.out = 100)
+
+Qagg &lt;- map(price, demand_agg) %&gt;% 
+  unlist()
+
+agg_df&lt;- tibble(Qagg = Qagg, price = price)
+
+demand_agg_eq &lt;- lm(price ~ Qagg, data = agg_df) 
+extract_eq(model = demand_agg_eq, use_coefs = TRUE, coef_digits = 5)</code></pre>
+<p><span class="math display">\[
+\operatorname{\widehat{price}} = 29.78135 - 4e-05(\operatorname{Qagg})
+\]</span></p>
+<pre class="r"><code># Switch the equations above so Q is on one side and then add
+
+agg_slope &lt;- demand_agg_eq$coefficients[2]
+agg_int &lt;- demand_agg_eq$coefficients[1]</code></pre>
+<p>[DELETE FOLLOWING MANUAL ATTEMPT:] With the income-based demand
+curves, we can sum horizontally to find the <strong>aggregate demand
+curve:</strong></p>
 <p><em>P = 30.5 - 0.000039Q</em></p>
 <p>(The price is in cents, not dollars)</p>
 <p><strong>Supply Curve</strong></p>
@@ -424,9 +461,30 @@ cost. We will be cautious of converting from cents to dollars.</p>
 <li>Producer Benefit = $2.6106^{4}</li>
 <li>Environmental Cost = $1.0265^{4}</li>
 </ul>
-</div>
 <div id="consumer-benefit" class="section level3">
 <h3><strong>3. Consumer Benefit</strong></h3>
+<p><strong>Low income consumers:</strong> consumer benefit is found by
+taking the area under the low income demand curve but above the current
+price of electricity ($0.10/kWh). This area is a triangle with base
+121545 and height 13.37.</p>
+<p>0.5 * 13.37 cents/kWh * 121545 kWh = 812,528 cents</p>
+<p><strong>benefit for low income consumers is $8,125.3.</strong></p>
+<p><strong>High income consumers:</strong>consumer benefit is found by
+taking the area under the high income demand curve but above the current
+price of electricity ($0.10/kWh). This area is a triangle with base
+415577 and height 21.61.</p>
+<p>0.5 * 21.61 cents/kWh * 415577 kWh = 4,490,309.5 cents</p>
+<p><strong>benefit for high income consumers is $44,903.1.</strong></p>
+<p>total consumer surplus = 8,125.3 + 44,903.1 = $53,028.4</p>
+<p>total consumer surplus = (13.37 * 158,641.5) + ((31.61 - 23.37) * 0.5
+* 158,641.5) + (0.5 * (525,641 - 158,641.5) * 13.37) total consumer
+surplus = <strong>$52,280.3 (CHECK THIS)</strong></p>
+<p>(8,125.3/53,028.4)<em>100 = 15.3% (44,903.1/53,028.4)</em>100 =
+84.7%</p>
+<p><strong>low income consumers receive 15.3% of the total
+benefit.</strong></p>
+<p><strong>high income consumers receive 84.7% of the total benefit.
+</strong></p>
 </div>
 <div id="optimal-tax" class="section level3">
 <h3><strong>4. Optimal Tax</strong></h3>
