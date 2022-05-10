@@ -77,7 +77,9 @@ The marginal external cost per kWh of electricity is $`r round(interim_price_kWh
 **Aggregate Demand Curve** 
 
 **Low Income Demand Curve:**
-```{r}
+
+*P = 23.37 - 0.0001102Q*
+```{r, include = FALSE}
 # lm estimates for both low and high incomes 
 demand_low <- lm(price_cents ~ kwh, income_level == 'low',
                  data = electricity_long)
@@ -86,7 +88,9 @@ extract_eq(model = demand_low, use_coefs = TRUE, coef_digist = 5)
 demand_low
 ```
 **High Income Demand Curve:**
-```{r}
+
+*P = 31.61 - 0.000052Q*
+```{r, include = FALSE}
 demand_high <- lm(price_cents ~ kwh, income_level == 'high',
                   data = electricity_long)
 extract_eq(model = demand_high, use_coefs = TRUE, coef_digist = 5)
@@ -119,7 +123,7 @@ demand_agg <- function(kwh){demand_agg_int + demand_agg_slope *kwh}
   
 ```
 
-The resulting aggregate demand equation is *P = 30.5 - 0.000039Q*
+*P = 30.5 - 0.000039Q*
 
 (The price is in cents, not dollars)
 
@@ -127,7 +131,7 @@ The resulting aggregate demand equation is *P = 30.5 - 0.000039Q*
 
 The current price is $0.10/kWh and the MC for electricity is linear with a 0 intercept. 
 
-```{r}
+```{r, include = FALSE}
 kwh_agg <- demand_agg_p(10)
 
 # 522127.8 kWh at $0.10
@@ -142,7 +146,7 @@ The supply curve will pass through the agg demand curve at $0.10/kwh. We can the
 
 We can then calculate consumer and producer surplus and environmental cost. We will be cautious of converting from cents to dollars. 
 
-```{r}
+```{r, include = FALSE}
 # Consumer Surplus 
 
 # Converting cents to dollars for the y-axis
