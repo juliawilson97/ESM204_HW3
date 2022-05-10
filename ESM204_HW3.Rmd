@@ -74,7 +74,7 @@ The marginal external cost per kWh of electricity is $`r round(interim_price_kWh
 
 ### **2. Aggregations**
 
-**Aggregate Demand Curve** 
+ 
 
 **Low Income Demand Curve:**
 ```{r}
@@ -98,7 +98,6 @@ demand_high <- lm(price_cents ~ kwh, income_level == 'high',
 
 The equation for our high income demand curve was **P = 31.61 - 0.000052Q**
 
-With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
 
 ```{r}
 # Demand model from sample code
@@ -122,8 +121,7 @@ demand_agg <- function(p){
 # demand_agg(10) = 536,719.5
 ```
 
-With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:** 29.78135 - 0.00004(Qagg)
-
+With the income-based demand curves, we can sum horizontally to find the **aggregate demand curve:**
 ```{r}
 # Make a vector and extract the lm 
 price = seq(0, 30, length.out = 100)
@@ -142,8 +140,8 @@ demand_agg_eq <- lm(price ~ Qagg, data = agg_df)
 agg_slope <- demand_agg_eq$coefficients[2]
 agg_int <- demand_agg_eq$coefficients[1]
 
-agg_slope
-agg_int
+#agg_slope
+#agg_int
 
 # Aggregate demand function is P = 29.78135 - 0.00004(Qagg)
 
@@ -177,11 +175,11 @@ demand_agg <- function(kwh){demand_agg_int + demand_agg_slope *kwh}
 
 The resulting aggregate demand equation from 0 to 158,642 is: 
 
-*31.61 - 0.000052Q* 
+**P = 31.61 - 0.000052Q**
 
 and from 158,462 to 820,339, it is: 
 
-*P = 29.78 - .00004Q*
+**P = 29.78 - .00004Q**
 
 (The price is in cents, not dollars)
 
@@ -200,9 +198,9 @@ supply_slope <- 10/kwh_agg
 
 The supply curve will pass through the agg demand curve at $0.10/kwh. We can then infer the supply curve equation will be: 
 
-*P = 0.0000192Q*
+**P = 0.0000192Q**
 
-#### Visualize the data
+#### Visualizing the data
 
 ```{r}
 ggplot(agg_df, aes(Qagg, price)) +
@@ -240,7 +238,7 @@ We can then calculate consumer and producer surplus and environmental cost. We w
 
 # Converting cents to dollars for the y-axis
 cs <- 0.5*kwh_agg*(0.305-0.10)
-cs
+#cs
 # $53,518.12
 
 # Producer Surplus 
@@ -253,10 +251,25 @@ env_cost <- interim_price_kWh*kwh_agg
 # $10,264.96
 ```
 
-- Consumer Benefit = $`r round(cs,0)`
-- Producer Benefit = $`r round(ps,0)`
-- Environmental Cost = $`r round(env_cost,0)`
+**Calculating Consumer Benefit**: Take the area under the aggregate demand curve, but
+above the current price of electricity ($0.10/kWh).This area is a triangle with base 536,719.5
+and height 19.78.
+0.5 * 536,719.5 * (29.78-10) = 5308155 cents
 
+**Consumer Surplus = $53,081.5**
+
+**Calculating Producer Benefit**: Take the area under the aggregate demand curve, but above
+the current price of electricity ($0.10/kWh).This area is a triangle with base 536,719.5 and
+height 10.
+0.5 * 536,719.5 * 10 = 2683595 cents
+
+**Producer Surplus = $26,835**
+
+**Calculating Environmental Cost:** Multiply the MEC found in question 1 (0.019) by Q*
+(536,719.5)
+0.019 * 536,719.5 = 10,734.39 cents
+
+ **Environmental Cost = $10,734.4**
 
 ### **3. Consumer Benefit**
 
