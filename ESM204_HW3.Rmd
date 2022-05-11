@@ -401,12 +401,11 @@ a) the new quantity of electricity produced and consumed with the tax will be ap
 b) The new price of electricity with the tax will increase from 10 cents to **`r round(p_tax_consumer,2)` cents.**
 
 
-c) welfare effect of tax on high income consumers: **$`r round(cs_high_tax, 2)`**
+c) welfare effect of tax on high income consumers: **$`r round(cs_high_tax, 2)`** NEED TO COMPARE TO STATUS QUO
 
 d) welfare effect of tax on low income consumers:  **$`r round(cs_low_tax, 2)`**
 
-e) effect of tax on power generators (producer surplus): **-$`r round(ps_tax, 2)`**
-IS THIS A DECREASE? so would be negative or nah
+e) overall effect of tax on power generators: **$`r round(ps_tax, 2)`**
 
 f) The total environmental damage decreases from **$`r round(env_cost,2)`** to **$`r round(env_cost_tax,2)`,** a change of **$`r round(env_change, 2)`.**
 
@@ -417,7 +416,8 @@ g) The total tax revenue generated from the policy was **$`r round(tax_rev,2)`.*
 
 estimates of distributional effects of a carbon tax with different SCC values are as follows: 
 
-**$51/ton:**
+**$51/ton:**.
+tax is 51/(2204/0.85) = **$0.0197/kWh**
 
   - effects on "high" income consumers: 
   
