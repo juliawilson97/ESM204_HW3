@@ -70,7 +70,7 @@ interim_price_kWh <- interim_price_lb * 0.85
 
 ```
 
-The marginal external cost per kWh of electricity is 1.96 cents.
+The marginal external cost per kWh of electricity is 1.97 cents.
 
 ### **2. Aggregations**
 
@@ -267,9 +267,9 @@ height 10.
 
 **Calculating Environmental Cost:** Multiply the MEC found in question 1 (0.019) by Q*
 (536,719.5)
-0.019 * 536,719.5 = 10,734.39 cents
+0.0197 * 536,719.5 =  $10,573.4
 
- **Environmental Cost = $10,734.4**
+ **Environmental Cost = $10,573.4**
 
 ### **3. Consumer Benefit**
 
@@ -301,35 +301,88 @@ total consumer surplus = **$52,280.3 (CHECK THIS)**
 
 ### **4. Optimal Tax**
 
-Dagg: 
-
-(for 0 - 158,642) P = 31.61 - 0.000052Q
+Dagg: (for 0 - 158,642) P = 31.61 - 0.000052Q
 
 (for 158,642 -820,339) P = 29.78 - .00004Q
 
-Supply: 
+Supply: 0.000019Q
 
-0.000019Q
-
-Dagg': 
-
-P' = (29.78 + 31.61)/2 - .00004Q
+Dagg': P' = (29.78 + 31.61)/2 - .00004Q
 
 0.000019Q' = 30.695 - 0.00004Q - 1.96
 
-0.0000592Q = 28.735 
+  0.0000592Q = 28.735 
+  Qtax = 485388.5
+  
+Pt = 0.0000192(485388.5) + 1.96
+Pt = 9.319 + 1.96
 
-Qtax = 485388.5
+Pt = 11.28
+  (assuming tax is passed on to consumers)
 
 11.28 = 30.695 - 0.00004Q
 
-(assuming tax is passed on to consumers)
+
+
 (status quo) 10 = 29.78 - 0.00004(Q)
-Q = 494500
-P = 0.0000192(485388.5)
-P = 9.319
+  Q = 494500
+  
+
 
 qtax
+
+
+```{r}
+mpc_q <- function(p) {p/supply_slope} # MPC in terms of Q
+# DEMAND FUNCTION WITH TAX (SOLVED IN #1 MEC = $0.01965986 -> 1.97 cents)
+dem_tax <- function(p, model){
+  q <- (p - (model$coefficients[[1]]-1.97))/model$coefficients[[2]]
+  q <- ifelse(q<0,0,q)
+  return(q)
+}
+# AGG DEMAND FUNCTION w/ TAX
+dem_agg_tax <- function(p){
+  q <- dem_tax(p, demand_low) + dem_tax(p, demand_high)
+  return(q)
+}
+# NEW EQUILIBRIUM 
+uniroot(function(p)
+  dem_agg_tax(p) - mpc_q(p),
+        interval = c(0,20))
+# a. Amount of electricity produced and consumed
+# b. Price of electricity
+#save new p
+p_tax <- 9.31988
+#generate new Q
+q_tax <- dem_agg_tax(p_tax)
+q_tax
+#c. Welfare of "high" income consumers
+demand_high_tax <- dem_tax(p_tax, demand_high)
+cs_high_tax <- (0.5 * (.3161 - 0.0197 - (p_tax/100)) * demand_high_tax) - (demand_high_tax * 0.0197)
+cs_high_tax
+# d DOES NOT MAKE SENSE NEED HELP!!!!!!!!!!!
+#d. Welfare of "low" income consumers
+cs_low_tax_og <- cs - env_cost
+demand_low_tax <- demand(p_tax, demand_low)
+#Below is the total env cost at the new level of consumption
+env_cost_tax <- interim_price_kWh * q_tax
+cs_low_tax <- (0.5 * (.2337 - 0.0197 - 0.0932) * demand_low_tax) - (demand_low_tax * 0.0197) - env_cost_tax
+cs_low_tax
+# e. Power suppliers 
+# FIND NEW P FOR SUPPLIERS GIVEN Q*
+q_tax <- dem_agg_tax(p_tax)
+ps_tax <- 0.5*q_tax*0.0932
+ps_tax
+# f. Total environmental damage
+# P* of MEC (0.0197) TIMES Q*
+env_change <- env_cost - env_cost_tax
+env_change
+# g. Tax revenue generated
+# P* TIMES Q*
+tax_rev <- interim_price_kWh*q_tax
+tax_rev
+```
+
 
 a) the new quantity of electricity produced and consumed with the tax will be approximately **485,388.5 kWh,**  which is ** kWh** less than the status quo. 
 
@@ -358,9 +411,11 @@ PS at 10c = (0.5)()() =
 
 PS at 11.28c = (0.5)()() = 
 
-f) 
+f) total environmental damage
 
-total environmental damage
+before tax = Qt + MEC = (522,128)(1.96) = $10,264.96
+
+after tax = 
 
 ### **5. Redistribution**
 
@@ -408,3 +463,4 @@ estimates of distributional effects of a carbon tax with different SCC values ar
   
 
 ### **6. Solar PV**
+
