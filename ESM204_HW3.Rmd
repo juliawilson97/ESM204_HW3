@@ -6,7 +6,7 @@ date: '2022-05-06'
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, options(scipen = 999))
 
 library(tidyverse)
 library(here)
@@ -14,6 +14,7 @@ library(janitor)
 library(thematic)
 library(ggplot2)
 library(equatiomatic)
+
 ```
 
 
@@ -355,67 +356,62 @@ uniroot(function(p)
 p_tax <- 9.31988
 #generate new Q
 q_tax <- dem_agg_tax(p_tax)
-q_tax
+
 #c. Welfare of "high" income consumers
 demand_high_tax <- dem_tax(p_tax, demand_high)
 cs_high_tax <- (0.5 * (.3161 - 0.0197 - (p_tax/100)) * demand_high_tax) - (demand_high_tax * 0.0197)
-cs_high_tax
-# d DOES NOT MAKE SENSE NEED HELP!!!!!!!!!!!
+
+
+# CHECK THIS ONE (specifically low income welfare)
+
 #d. Welfare of "low" income consumers
-cs_low_tax_og <- cs - env_cost
+cs_low_og <- cs - env_cost
 demand_low_tax <- demand(p_tax, demand_low)
 #Below is the total env cost at the new level of consumption
+
 env_cost_tax <- interim_price_kWh * q_tax
-cs_low_tax <- (0.5 * (.2337 - 0.0197 - 0.0932) * demand_low_tax) - (demand_low_tax * 0.0197) - env_cost_tax
+cs_low_tax <- (0.5 * (.2337 - 0.0197 - 0.0932) * demand_low_tax) - env_cost_tax - (demand_low_tax * 0.0197)
+#WHY DO WE NEED THE LAST TERM 
+#isnt the .0197 already included in the first expression 
+
 cs_low_tax
 # e. Power suppliers 
 # FIND NEW P FOR SUPPLIERS GIVEN Q*
 q_tax <- dem_agg_tax(p_tax)
 ps_tax <- 0.5*q_tax*0.0932
-ps_tax
+
 # f. Total environmental damage
 # P* of MEC (0.0197) TIMES Q*
 env_change <- env_cost - env_cost_tax
-env_change
+
 # g. Tax revenue generated
 # P* TIMES Q*
 tax_rev <- interim_price_kWh*q_tax
-tax_rev
+
+
+q_tax_diff <- q_tax - kwh_agg
+
+
+p_tax_consumer <- p_tax + (interim_price_kWh*100)
 ```
 
 
-a) the new quantity of electricity produced and consumed with the tax will be approximately **485,388.5 kWh,**  which is ** kWh** less than the status quo. 
+a) the new quantity of electricity produced and consumed with the tax will be approximately **`r round(q_tax, 2)`kWh,**  which is **`r round(q_tax_diff, 2)` kWh** less than the status quo. 
 
-b) The new price of electricity with the tax will increase from 10 cent to **11.28 cents**. 
+b) The new price of electricity with the tax will increase from 10 cents to **`r round(p_tax_consumer,2)` cents.**
 
-c) 
-high CS before tax = (0.5)(415576)(21.61) = 4,490,298
 
-high CS after tax = (0.5)()() = 
+c) welfare effect of tax on high income consumers: **$`r round(cs_high_tax, 2)`**
 
-effect = (CS before tax) - (CS after tax)
+d) welfare effect of tax on low income consumers:  **$`r round(cs_low_tax, 2)`**
 
-effect = 
+e) effect of tax on power generators (producer surplus): **-$`r round(ps_tax, 2)`**
+IS THIS A DECREASE? so would be negative or nah
 
-d) 
-low CS before tax = (0.5)(415576)(21.61) = 4,490,298
+f) The total environmental damage decreases from **$`r round(env_cost,2)`** to **$`r round(env_cost_tax,2)`,** a change of **$`r round(env_change, 2)`.**
 
-low CS after tax = (0.5)()()
+g) The total tax revenue generated from the policy was **$`r round(tax_rev,2)`.**
 
-effect = (low CS before tax) - (low CS after tax)
-
-effect = 
-
-e) 
-PS at 10c = (0.5)()() = 
-
-PS at 11.28c = (0.5)()() = 
-
-f) total environmental damage
-
-before tax = Qt + MEC = (522,128)(1.96) = $10,264.96
-
-after tax = 
 
 ### **5. Redistribution**
 
